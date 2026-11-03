@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f8f0">
+  <meta name="description" content="轻松练习加法和减法的数字小花园。">
+  <title>数字小花园｜加减法练习</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #303b50;
+      --muted: #7d8798;
+      --paper: #fffefa;
+      --bg: #f5f7ef;
+      --mint: #d9f2e6;
+      --green: #39a87c;
+      --green-dark: #248b64;
+      --lavender: #e8e2ff;
+      --yellow: #fff0b7;
+      --coral: #ffb8a8;
+      --line: #e9ece4;
+      --shadow: 0 18px 55px rgba(72, 87, 75, .10);
+      font-family: ui-rounded, "SF Pro Rounded", "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 6%, rgba(255, 237, 178, .62), transparent 21rem),
+        radial-gradient(circle at 94% 12%, rgba(224, 218, 255, .72), transparent 24rem),
+        var(--bg);
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid #5c9ef4; outline-offset: 3px; }
+    .app { max-width: 1120px; min-height: 100vh; margin: 0 auto; padding: 22px 28px 28px; display: flex; flex-direction: column; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 850; letter-spacing: .02em; }
+    .brand-mark { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 14px; background: #fff; box-shadow: 0 5px 15px #7182711a; font-size: 22px; }
+    .top-note { color: var(--muted); font-size: 13px; font-weight: 650; }
+    main { flex: 1; display: grid; place-items: center; }
+    .screen { width: 100%; animation: appear .28s ease-out; }
+    @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .home { max-width: 940px; margin: auto; display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 44px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid #e8eadf; border-radius: 999px; background: #ffffffa8; color: #6d7c6e; font-size: 12px; font-weight: 800; }
+    h1 { margin: 16px 0 9px; font-size: clamp(36px, 5vw, 56px); line-height: 1.12; letter-spacing: -.045em; }
+    .intro { max-width: 470px; color: var(--muted); font-size: 16px; line-height: 1.75; margin: 0 0 24px; }
+    .last-score { display: inline-flex; gap: 8px; align-items: center; padding: 9px 12px; border-radius: 13px; background: #fff; color: #667487; font-size: 12px; font-weight: 700; box-shadow: 0 4px 14px #72826c0d; margin-bottom: 20px; }
+    .last-score strong { color: var(--green-dark); }
+    .level-title { font-size: 13px; font-weight: 850; margin: 1px 0 10px; }
+    .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .level { min-height: 105px; padding: 12px 10px; border: 2px solid transparent; border-radius: 17px; background: #fff; text-align: left; color: var(--ink); cursor: pointer; transition: .18s ease; box-shadow: 0 5px 18px #6375680a; }
+    .level:hover { transform: translateY(-2px); }
+    .level.active { border-color: var(--green); background: #f5fff9; box-shadow: 0 0 0 3px #39a87c18; }
+    .level .emoji { display: block; font-size: 21px; margin-bottom: 5px; }
+    .level strong { display: block; font-size: 13px; }
+    .level small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .start-row { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+    .count-select { border: 1px solid #e6e9e0; background: #fff; border-radius: 13px; min-height: 48px; padding: 0 12px; color: #667487; font-size: 13px; font-weight: 750; }
+    .primary { min-height: 50px; padding: 0 24px; border: 0; border-radius: 15px; background: var(--green); color: #fff; font-weight: 850; font-size: 15px; cursor: pointer; box-shadow: 0 7px 0 #238b64, 0 12px 22px #2a9d7333; transition: transform .14s, box-shadow .14s; }
+    .primary:hover { background: #319c72; transform: translateY(-1px); }
+    .primary:active { transform: translateY(4px); box-shadow: 0 3px 0 #238b64; }
+    .art-wrap { position: relative; display: grid; place-items: center; min-height: 350px; }
+    .garden-art { width: min(100%, 390px); aspect-ratio: 1; position: relative; display: grid; place-items: center; border-radius: 48% 52% 51% 49% / 47% 44% 56% 53%; background: linear-gradient(145deg,#fff9d8,#e4f6e9 58%,#e8e3ff); box-shadow: inset 0 0 0 12px #ffffff58; }
+    .sun { position: absolute; top: 12%; right: 16%; width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: #ffdc72; font-size: 27px; box-shadow: 0 0 0 9px #ffdc7226; }
+    .cloud { position: absolute; top: 19%; left: 12%; color: #fff; font-size: 55px; text-shadow: 0 4px 5px #72826c18; }
+    .number-card { position: absolute; z-index: 2; top: 23%; left: 17%; transform: rotate(-8deg); padding: 13px 18px; background: #fff; border-radius: 17px; font-size: 21px; font-weight: 900; box-shadow: 0 9px 23px #74847122; }
+    .number-card span { color: var(--green); }
+    .flower { position: absolute; bottom: 18%; left: 12%; font-size: 46px; transform: rotate(-10deg); }
+    .flower.two { left: auto; right: 10%; bottom: 22%; font-size: 34px; transform: rotate(12deg); }
+    .mole { position: relative; z-index: 1; width: 148px; height: 154px; margin-top: 36px; border-radius: 49% 51% 45% 45%; background: #c98f68; box-shadow: inset -12px -9px 0 #a97557, 0 15px 20px #54786020; }
+    .mole-ear { position: absolute; top: -13px; left: 5px; width: 45px; height: 45px; border: 8px solid #b9805e; border-radius: 50%; background: #f7c8b6; }
+    .mole-ear.right { left: auto; right: 5px; }
+    .mole-face { position: absolute; inset: 35px 20px 22px; border-radius: 48%; background: #f7d8bd; }
+    .eye { position: absolute; top: 36px; left: 28px; width: 8px; height: 10px; border-radius: 50%; background: #3d4350; }
+    .eye.right { left: auto; right: 28px; }
+    .cheek { position: absolute; top: 49px; left: 10px; width: 18px; height: 9px; border-radius: 50%; background: #f3a49d; opacity: .8; }
+    .cheek.right { left: auto; right: 10px; }
+    .nose { position: absolute; top: 46px; left: 50%; width: 13px; height: 9px; border-radius: 50%; background: #7a524f; transform: translateX(-50%); }
+    .smile { position: absolute; top: 53px; left: 50%; width: 18px; height: 9px; border-bottom: 2px solid #7a524f; border-radius: 0 0 50% 50%; transform: translateX(-50%); }
+    .mole-bib { position: absolute; bottom: -4px; left: 36px; width: 75px; height: 32px; border-radius: 22px 22px 15px 15px; background: #f1a7a0; box-shadow: inset 0 4px 0 #ffffff52; }
+    .sparkle { position: absolute; color: #fff; font-size: 22px; }
+    .sparkle.a { top: 39%; right: 15%; } .sparkle.b { bottom: 18%; right: 27%; font-size: 16px; }
+    .quiz-layout { max-width: 980px; margin: auto; display: grid; grid-template-columns: minmax(0, 1fr) 275px; gap: 18px; align-items: stretch; }
+    .quiz-card, .side-card, .result-card { background: var(--paper); border: 1px solid #eaede5; border-radius: 25px; box-shadow: var(--shadow); }
+    .quiz-card { padding: 23px 28px 25px; min-height: 510px; display: flex; flex-direction: column; }
+    .quiz-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .quiet-button { border: 0; background: transparent; padding: 8px 0; color: #8a94a0; cursor: pointer; font-weight: 700; font-size: 13px; }
+    .quiz-label { color: var(--muted); font-weight: 800; font-size: 13px; }
+    .progress-track { height: 9px; background: #edf0e9; border-radius: 20px; overflow: hidden; margin: 10px 0 24px; }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg,#69c99a,#45ad7e); transition: width .3s ease; }
+    .question-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 215px; }
+    .tiny-label { color: #9ca5ad; font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+    .equation { margin: 10px 0 14px; font-size: clamp(49px, 7vw, 66px); letter-spacing: .02em; font-weight: 900; line-height: 1.1; }
+    .equation .operator { color: #f4a653; padding: 0 6px; }
+    .answer-box { display: flex; align-items: center; justify-content: center; width: 158px; height: 54px; border: 2px dashed #d9ded4; border-radius: 15px; color: var(--green-dark); background: #fbfcf8; font-size: 29px; font-weight: 900; letter-spacing: .09em; }
+    .answer-box.placeholder { color: #c3c9c2; }
+    .feedback { min-height: 34px; margin-top: 10px; font-size: 13px; font-weight: 800; color: var(--green-dark); }
+    .feedback.wrong { color: #d77c65; }
+    .feedback .hint { display: block; margin-top: 3px; color: #929da8; font-size: 11px; font-weight: 650; }
+    .keypad { max-width: 340px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .key { min-height: 47px; border: 1px solid #e8ebe4; border-radius: 12px; background: #fff; color: var(--ink); font-size: 18px; font-weight: 850; cursor: pointer; box-shadow: 0 3px 0 #e7eae3; transition: .12s; }
+    .key:hover { background: #f5faf5; }
+    .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #e7eae3; }
+    .key.action { color: #849092; font-size: 14px; background: #f8f9f5; }
+    .key.submit { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 3px 0 #258d66; font-size: 15px; }
+    .key.submit:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+    .side-card { padding: 20px; display: flex; flex-direction: column; }
+    .side-heading { display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 900; }
+    .streak { padding: 6px 9px; background: #fff2cb; border-radius: 10px; color: #a77a28; font-size: 12px; }
+    .buddy { align-self: center; position: relative; width: 106px; height: 106px; margin: 25px 0 14px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(140deg,#fff0bf,#ddf3e5); font-size: 61px; }
+    .buddy:after { content: '✦'; position: absolute; top: 0; right: -5px; color: #f1bd53; font-size: 22px; }
+    .side-copy { text-align: center; color: #8b95a1; font-size: 12px; line-height: 1.6; }
+    .side-copy strong { display: block; color: var(--ink); font-size: 14px; margin-bottom: 3px; }
+    .session-dots { display: grid; grid-template-columns: repeat(5,1fr); gap: 7px; margin: 20px 0 15px; }
+    .session-dot { aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; background: #f0f2ed; color: #99a29c; font-size: 11px; font-weight: 800; }
+    .session-dot.done { background: #d9f2e6; color: #258d66; }
+    .session-dot.current { background: #ffe9a4; color: #806521; box-shadow: 0 0 0 2px #f7d36e; }
+    .tip-box { margin-top: auto; padding: 12px; border-radius: 14px; background: #f7f5ff; color: #7c769c; font-size: 11px; line-height: 1.55; }
+    .tip-box strong { display: block; color: #665c91; font-size: 12px; margin-bottom: 3px; }
+    .result-screen { max-width: 760px; margin: auto; }
+    .result-card { padding: clamp(22px, 4vw, 38px); }
+    .result-head { text-align: center; }
+    .result-emoji { font-size: 48px; }
+    .result-head h2 { margin: 7px 0 4px; font-size: 30px; letter-spacing: -.03em; }
+    .result-head p { margin: 0; color: var(--muted); font-size: 14px; }
+    .score-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 25px 0; }
+    .score-stat { padding: 14px 10px; text-align: center; border-radius: 16px; background: #f8f9f4; }
+    .score-stat strong { display: block; font-size: 24px; color: var(--green-dark); }
+    .score-stat span { color: var(--muted); font-size: 11px; font-weight: 750; }
+    .review-title { margin: 15px 0 9px; font-size: 14px; font-weight: 900; }
+    .review-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 220px; overflow: auto; }
+    .review-item { padding: 11px 12px; border-radius: 14px; background: #fff8ed; border: 1px solid #f5ead8; }
+    .review-item .review-q { font-weight: 900; color: #576173; font-size: 14px; }
+    .review-item .review-explain { margin-top: 5px; color: #8d8b84; font-size: 11px; line-height: 1.5; }
+    .all-good { padding: 16px; text-align: center; border-radius: 15px; background: #effaf3; color: #3e936d; font-weight: 750; font-size: 13px; }
+    .result-actions { display: flex; justify-content: center; gap: 11px; margin-top: 23px; }
+    .secondary { min-height: 48px; padding: 0 20px; border: 1px solid #e1e6dc; border-radius: 14px; background: #fff; color: #657181; font-weight: 800; cursor: pointer; }
+    .footer { text-align: center; padding: 19px 0 0; color: #a0a89f; font-size: 11px; }
+    .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 760px) {
+      .app { padding: 15px 16px 18px; }
+      .topbar { margin-bottom: 14px; }
+      .home { grid-template-columns: 1fr; gap: 12px; max-width: 520px; }
+      .home-copy { order: 1; }
+      .art-wrap { order: 0; min-height: 230px; }
+      .garden-art { width: 230px; }
+      .mole { transform: scale(.76); margin-top: 26px; }
+      .number-card { font-size: 16px; padding: 9px 12px; }
+      .sun { width: 42px; height: 42px; font-size: 20px; }
+      .cloud { font-size: 38px; }
+      .flower { font-size: 31px; }
+      h1 { font-size: 36px; margin-top: 11px; }
+      .intro { font-size: 14px; margin-bottom: 15px; }
+      .last-score { margin-bottom: 13px; }
+      .level { min-height: 94px; padding: 10px 8px; }
+      .level strong { font-size: 12px; }
+      .level small { font-size: 9px; }
+      .start-row { margin-top: 14px; }
+      .quiz-layout { grid-template-columns: 1fr; gap: 10px; max-width: 540px; }
+      .quiz-card { min-height: 0; padding: 16px 18px 20px; }
+      .progress-track { margin: 8px 0 10px; }
+      .question-area { min-height: 165px; }
+      .equation { font-size: 53px; margin: 7px 0 10px; }
+      .keypad { max-width: 370px; gap: 7px; }
+      .key { min-height: 43px; }
+      .side-card { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 3px 12px; padding: 11px 15px; }
+      .side-heading { grid-column: 1 / -1; }
+      .buddy { width: 48px; height: 48px; font-size: 29px; margin: 3px; }
+      .buddy:after { font-size: 12px; }
+      .side-copy { text-align: left; }
+      .side-copy strong { font-size: 12px; margin: 0; }
+      .session-dots { grid-column: 1 / -1; grid-template-columns: repeat(10,1fr); gap: 5px; margin: 6px 0 1px; }
+      .session-dot { border-radius: 7px; font-size: 9px; }
+      .tip-box { display: none; }
+      .footer { padding-top: 11px; }
+    }
+    @media (max-width: 390px) {
+      .app { padding-left: 12px; padding-right: 12px; }
+      .top-note { display: none; }
+      .levels { gap: 6px; }
+      .level { min-height: 88px; }
+      .start-row { gap: 8px; }
+      .count-select { padding: 0 8px; font-size: 12px; }
+      .primary { padding: 0 17px; }
+      .review-list { grid-template-columns: 1fr; }
+      .score-stat strong { font-size: 21px; }
+    }
+    @media (max-height: 700px) and (min-width: 761px) {
+      .app { padding-top: 12px; padding-bottom: 12px; }
+      .topbar { margin-bottom: 10px; }
+      .quiz-card { min-height: 450px; padding-top: 17px; padding-bottom: 18px; }
+      .question-area { min-height: 175px; }
+      .key { min-height: 41px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">🌼</span><span>数字小花园</span></div>
+      <div class="top-note">每天一点点，数学更轻松 ✨</div>
+    </header>
+    <main id="main" aria-live="polite"></main>
+    <footer class="footer">慢慢想也没关系，试一试就很棒啦 🌱</footer>
+  </div>
+  <script>
+    (() => {
+      const levels = [
+        { id: 'easy', emoji: '🌱', name: '数感热身', desc: '20 以内 · 轻松开始' },
+        { id: 'steady', emoji: '🌷', name: '稳稳练习', desc: '100 以内 · 不进退位' },
+        { id: 'challenge', emoji: '🌟', name: '小小挑战', desc: '100 以内 · 进退位' }
+      ];
+      const main = document.querySelector('#main');
+      const state = { level: 'easy', count: 15, questions: [], index: 0, input: '', answers: [], checked: false, streak: 0 };
+      const storageKey = 'number-garden-progress-v1';
+
+      const readStats = () => {
+        try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch { return {}; }
+      };
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+
+      function home() {
+        const stats = readStats();
+        main.innerHTML = `
+          <section class="screen home">
+            <div class="home-copy">
+              <span class="eyebrow">🍀 适合 8 岁左右 · 不赶时间</span>
+              <h1>来花园里，<br>玩一会儿数学吧！</h1>
+              <p class="intro">每次都有新题目。认真想一想，答完还能看看简单的小方法。</p>
+              ${stats.last ? `<div class="last-score">🌟 上次练习 <strong>${stats.last.correct} / ${stats.last.total}</strong><span>· ${escapeHtml(stats.last.levelName)}</span></div>` : ''}
+              <div class="level-title">今天想玩哪一关？</div>
+              <div class="levels" role="group" aria-label="选择练习难度">
+                ${levels.map(item => `<button class="level ${state.level === item.id ? 'active' : ''}" data-level="${item.id}" aria-pressed="${state.level === item.id}"><span class="emoji">${item.emoji}</span><strong>${item.name}</strong><small>${item.desc}</small></button>`).join('')}
+              </div>
+              <div class="start-row">
+                <label class="visually-hidden" for="count-select">题目数量</label>
+                <select class="count-select" id="count-select"><option value="15" ${state.count === 15 ? 'selected' : ''}>15 道题</option><option value="20" ${state.count === 20 ? 'selected' : ''}>20 道题</option></select>
+                <button class="primary" id="start-btn">开始练习 <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+            <div class="art-wrap" aria-hidden="true">
+              <div class="garden-art">
+                <span class="cloud">☁</span><span class="sun">☀</span>
+                <div class="number-card">8 <span>+</span> 7 <span>=</span> ?</div>
+                <div class="mole"><i class="mole-ear"></i><i class="mole-ear right"></i><div class="mole-face"><i class="eye"></i><i class="eye right"></i><i class="cheek"></i><i class="cheek right"></i><i class="nose"></i><i class="smile"></i></div><i class="mole-bib"></i></div>
+                <span class="flower">🌼</span><span class="flower two">🌷</span><span class="sparkle a">✦</span><span class="sparkle b">✦</span>
+              </div>
+            </div>
+          </section>`;
+        main.querySelectorAll('[data-level]').forEach(button => button.addEventListener('click', () => {
+          state.level = button.dataset.level;
+          main.querySelectorAll('[data-level]').forEach(node => { const active = node.dataset.level === state.level; node.classList.toggle('active', active); node.setAttribute('aria-pressed', String(active)); });
+        }));
+        main.querySelector('#count-select').addEventListener('change', event => { state.count = Number(event.target.value); });
+        main.querySelector('#start-btn').addEventListener('click', start);
+      }
+
+      const rand = (max) => Math.floor(Math.random() * max);
+      const shuffle = array => {
+        for (let i = array.length - 1; i > 0; i--) { const j = rand(i + 1); [array[i], array[j]] = [array[j], array[i]]; }
+        return array;
+      };
+      function makeQuestion(level, op, regroup) {
+        let a, b, answer, tries = 0;
+        do {
+          tries++;
+          if (level === 'easy') {
+            a = 1 + rand(19); b = 1 + rand(20 - a);
+            if (op === '-') { a = 1 + rand(20); b = 1 + rand(a); }
+          } else if (op === '+') {
+            if (regroup && level === 'challenge') {
+              const tens = rand(8); const onesA = 1 + rand(9); const onesB = 10 - onesA + rand(onesA);
+              a = tens * 10 + onesA; b = rand(Math.max(1, 10 - tens)) * 10 + onesB;
+              if (a + b > 100) { a = 20 + onesA; b = 30 + onesB; }
+            } else {
+              const tensA = rand(8); const onesA = rand(10);
+              const tensB = rand(Math.max(1, 9 - tensA)); const onesB = Math.min(rand(Math.max(1, 10 - onesA)), 9 - onesA);
+              a = tensA * 10 + onesA; b = tensB * 10 + onesB;
+            }
+          } else {
+            if (regroup && level === 'challenge') {
+              const tensA = 2 + rand(7), onesA = rand(9);
+              const tensB = rand(tensA), onesB = onesA + 1 + rand(9 - onesA);
+              a = tensA * 10 + onesA; b = tensB * 10 + onesB;
+            } else {
+              const tensA = 1 + rand(9), onesA = rand(10);
+              const tensB = rand(tensA + 1), onesB = rand(onesA + 1);
+              a = tensA * 10 + onesA; b = tensB * 10 + onesB;
+            }
+          }
+          answer = op === '+' ? a + b : a - b;
+        } while ((answer < 0 || answer > 100 || a === b || (level === 'challenge' && regroup && op === '+' && Math.floor(a / 10) + Math.floor(b / 10) >= 10) || (level === 'challenge' && regroup && op === '-' && Math.floor(a / 10) <= Math.floor(b / 10))) && tries < 150);
+        return { a, b, op, answer };
+      }
+      function generateQuestions(level, count) {
+        const plusCount = Math.ceil(count / 2);
+        const types = shuffle([...Array(plusCount).fill('+'), ...Array(count - plusCount).fill('-')]);
+        const questions = [];
+        const seen = new Set();
+        for (const op of types) {
+          let q, key, tries = 0;
+          do {
+            const regroup = level === 'challenge' && (questions.filter(item => item.regroup).length < Math.round(count * .58)) && Math.random() < .72;
+            q = makeQuestion(level, op, regroup);
+            q.regroup = regroup;
+            key = `${q.a}${q.op}${q.b}`;
+            tries++;
+          } while (seen.has(key) && tries < 60);
+          seen.add(key); questions.push(q);
+        }
+        return shuffle(questions);
+      }
+      function start() {
+        state.questions = generateQuestions(state.level, state.count);
+        state.index = 0; state.input = ''; state.answers = []; state.checked = false; state.streak = 0;
+        renderQuiz();
+      }
+      function explanation(q) {
+        if (q.op === '+') {
+          const tens = Math.floor(q.b / 10) * 10, ones = q.b % 10;
+          if (q.regroup) return `${q.a} + ${tens} + ${ones} = ${q.a + tens} + ${ones} = ${q.answer}`;
+          return `${q.a} + ${tens} = ${q.a + tens}，再加 ${ones} = ${q.answer}`;
+        }
+        const tens = Math.floor(q.b / 10) * 10, ones = q.b % 10;
+        if (q.regroup) {
+          const topTens = Math.floor(q.a / 10) - 1;
+          const topOnes = q.a % 10 + 10;
+          return `${q.a} 拆成 ${topTens * 10} 和 ${topOnes}；先算 ${topTens * 10} - ${tens} = ${topTens * 10 - tens}，再算 ${topOnes} - ${ones} = ${topOnes - ones}，得 ${q.answer}`;
+        }
+        return `${q.a} - ${tens} = ${q.a - tens}，再减 ${ones} = ${q.answer}`;
+      }
+      function renderQuiz() {
+        const q = state.questions[state.index];
+        const answered = state.checked;
+        const correct = answered && Number(state.input) === q.answer;
+        const progress = (state.index + (answered ? 1 : 0)) / state.questions.length * 100;
+        const level = levels.find(item => item.id === state.level);
+        const dots = state.questions.map((_, i) => `<span class="session-dot ${i < state.index || (i === state.index && answered) ? 'done' : ''} ${i === state.index && !answered ? 'current' : ''}" aria-label="第 ${i + 1} 题">${i < state.index || (i === state.index && answered) ? '✓' : i + 1}</span>`).join('');
+        main.innerHTML = `
+          <section class="screen quiz-layout">
+            <div class="quiz-card">
+              <div class="quiz-top"><button class="quiet-button" id="quit-btn">← 回到花园</button><span class="quiz-label">${level.emoji} ${level.name}</span></div>
+              <div class="progress-track" aria-label="练习进度"><div class="progress-fill" style="width:${progress}%"></div></div>
+              <div class="question-area">
+                <div class="tiny-label">第 ${state.index + 1} 题 · 慢慢想</div>
+                <div class="equation"><span>${q.a}</span><span class="operator">${q.op}</span><span>${q.b}</span><span> = </span><span aria-hidden="true">?</span></div>
+                <div class="answer-box ${state.input ? '' : 'placeholder'}" id="answer-box" aria-label="你的答案">${state.input ? escapeHtml(state.input) : '···'}</div>
+                <div class="feedback ${answered && !correct ? 'wrong' : ''}" id="feedback" aria-live="polite">${answered ? (correct ? '答对啦，真棒！ 🌟' : `正确答案是 ${q.answer}，看这个小方法～<span class="hint">${escapeHtml(explanation(q))}</span>`) : '输入答案，再点绿色按钮'}</div>
+              </div>
+              <div class="keypad" aria-label="数字键盘">
+                ${['1','2','3','4','5','6','7','8','9','清除','0','⌫'].map(key => `<button class="key ${key === '清除' || key === '⌫' ? 'action' : ''}" data-key="${key}" ${answered ? 'disabled' : ''}>${key}</button>`).join('')}
+                <button class="key submit" id="submit-btn" style="grid-column:1/-1" ${answered ? '' : (state.input === '' ? 'disabled' : '')}>${answered ? '继续 →' : '检查答案 ✓'}</button>
+              </div>
+            </div>
+            <aside class="side-card">
+              <div class="side-heading"><span>花园探险</span><span class="streak">🔥 ${state.streak} 连对</span></div>
+              <div class="buddy" aria-hidden="true">🐻</div>
+              <div class="side-copy"><strong>${state.streak >= 3 ? '连对好厉害！' : '小熊陪你一起想'}</strong>${state.streak >= 3 ? '保持自己的节奏就好。' : '不着急，慢慢来。'}</div>
+              <div class="session-dots">${dots}</div>
+              <div class="tip-box"><strong>💡 小提示</strong>${q.op === '+' ? '可以先加整十，再加个位数。' : '可以先减整十，再减个位数。'}</div>
+            </aside>
+          </section>`;
+        main.querySelector('#quit-btn').addEventListener('click', home);
+        main.querySelectorAll('[data-key]').forEach(button => button.addEventListener('click', () => handleKey(button.dataset.key)));
+        main.querySelector('#submit-btn').addEventListener('click', () => answered ? next() : checkAnswer());
+      }
+      function handleKey(key) {
+        if (state.checked) return;
+        if (key === '清除') state.input = '';
+        else if (key === '⌫') state.input = state.input.slice(0, -1);
+        else if (state.input.length < 3) state.input += key;
+        updateAnswerDisplay();
+      }
+      function updateAnswerDisplay() {
+        const box = main.querySelector('#answer-box');
+        if (box) {
+          box.textContent = state.input || '···';
+          box.classList.toggle('placeholder', !state.input);
+        }
+        const submitButton = main.querySelector('#submit-btn');
+        if (submitButton && !state.checked) submitButton.disabled = !state.input;
+      }
+      function checkAnswer() {
+        if (!state.input) return;
+        const q = state.questions[state.index];
+        const isCorrect = Number(state.input) === q.answer;
+        state.checked = true;
+        state.answers.push({ question: q, given: Number(state.input), correct: isCorrect });
+        state.streak = isCorrect ? state.streak + 1 : 0;
+        renderQuiz();
+      }
+      function next() {
+        if (state.index === state.questions.length - 1) return finish();
+        state.index++; state.input = ''; state.checked = false; renderQuiz();
+      }
+      function finish() {
+        const correct = state.answers.filter(answer => answer.correct).length;
+        const missed = state.answers.filter(answer => !answer.correct);
+        const accuracy = Math.round(correct / state.questions.length * 100);
+        const level = levels.find(item => item.id === state.level);
+        const emoji = accuracy >= 90 ? '🏆' : accuracy >= 70 ? '🌈' : '🌱';
+        const heading = accuracy >= 90 ? '太厉害啦！' : accuracy >= 70 ? '做得很不错！' : '认真练习就有收获！';
+        try { localStorage.setItem(storageKey, JSON.stringify({ last: { correct, total: state.questions.length, levelName: level.name }, best: Math.max(readStats().best || 0, accuracy) })); } catch {}
+        main.innerHTML = `
+          <section class="screen result-screen"><div class="result-card">
+            <div class="result-head"><div class="result-emoji" aria-hidden="true">${emoji}</div><h2>${heading}</h2><p>你完成了今天的 ${level.name}，给自己一个大大的赞！</p></div>
+            <div class="score-row"><div class="score-stat"><strong>${correct}<small style="font-size:14px;color:#98a59e"> / ${state.questions.length}</small></strong><span>答对题数</span></div><div class="score-stat"><strong>${accuracy}%</strong><span>正确率</span></div><div class="score-stat"><strong>${missed.length}</strong><span>再看看</span></div></div>
+            <div class="review-title">${missed.length ? '🌼 一起看看这几道题' : '✨ 全部答对啦'}</div>
+            ${missed.length ? `<div class="review-list">${missed.map(item => `<div class="review-item"><div class="review-q">${item.question.a} ${item.question.op} ${item.question.b} = ${item.question.answer}</div><div class="review-explain">你的答案：${item.given}　·　${escapeHtml(explanation(item.question))}</div></div>`).join('')}</div>` : '<div class="all-good">每道题都答对了！带着好心情去玩耍吧 🌻</div>'}
+            <div class="result-actions"><button class="secondary" id="home-btn">回到花园</button><button class="primary" id="again-btn">再玩一轮 →</button></div>
+          </div></section>`;
+        main.querySelector('#home-btn').addEventListener('click', home);
+        main.querySelector('#again-btn').addEventListener('click', start);
+      }
+      function onKeydown(event) {
+        if (!state.questions.length || !main.querySelector('.quiz-layout') || state.checked) return;
+        if (/^\d$/.test(event.key) && state.input.length < 3) { state.input += event.key; updateAnswerDisplay(); }
+        else if (event.key === 'Backspace') { state.input = state.input.slice(0,-1); updateAnswerDisplay(); }
+        else if (event.key === 'Enter') checkAnswer();
+      }
+      document.addEventListener('keydown', onKeydown);
+      home();
+    })();
+  </script>
+</body>
+</html>
